@@ -14,7 +14,7 @@ A modern, full-stack ticket management system built for Le Royal Meridien Chenna
 
 A comprehensive ticket management solution designed for hotel operations, featuring role-based access control, SLA tracking, real-time updates, and department-based organization.
 
-**Live Demo**: [Your Vercel URL]
+**Live Demo**: [https://office-ticket-management-system-33gdbj10r.vercel.app/login]
 
 ---
 
