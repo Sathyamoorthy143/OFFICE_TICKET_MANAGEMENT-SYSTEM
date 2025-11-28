@@ -176,7 +176,6 @@ export default function Layout() {
             {profile && (
                 <PasswordResetModal
                     isOpen={showPasswordModal}
-                    onClose={() => setShowPasswordModal(false)}
                     userId={profile.id}
                     daysRemaining={getDaysUntilExpiry(profile)}
                 />
