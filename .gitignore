@@ -26,3 +26,10 @@ dist-ssr
 
 .github/instructions/kluster-code-verify.instructions.md
 .kluster
+
+# Environment variables
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*

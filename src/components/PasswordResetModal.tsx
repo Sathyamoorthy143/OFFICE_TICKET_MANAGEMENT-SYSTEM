@@ -11,7 +11,7 @@ interface PasswordResetModalProps {
     daysRemaining?: number;
 }
 
-export default function PasswordResetModal({ isOpen, onClose, userId, daysRemaining }: PasswordResetModalProps) {
+export default function PasswordResetModal({ isOpen, userId, daysRemaining }: PasswordResetModalProps) {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');

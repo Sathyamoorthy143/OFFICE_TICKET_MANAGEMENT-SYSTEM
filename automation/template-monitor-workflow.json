@@ -1,0 +1,212 @@
+{
+    "name": "Template Monitoring Automation",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "template-submit",
+                "options": {}
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "mode": "runOnceForEachItem",
+                "jsCode": "// Template Evaluation Logic\nconst inputData = $input.item.json;\n// Handle webhook nesting (data might be in 'body')\nconst template = inputData.body || inputData;\n\n// Configuration (embedded for portability)\nconst config = {\n  relevanceKeywords: {\n    modern: ['AI', 'machine learning', 'microservices', 'cloud-native', 'serverless', 'real-time', 'automation', 'API-first', 'mobile-first', 'responsive', 'scalable', 'distributed', 'containerization', 'kubernetes', 'DevOps', 'CI/CD', 'agile', 'remote work', 'collaboration', 'data-driven', 'analytics', 'cybersecurity', 'zero-trust', 'blockchain', 'IoT', 'edge computing', 'PWA', 'jamstack', 'headless CMS', 'low-code', 'no-code'],\n    problemFocused: ['solves', 'addresses', 'tackles', 'eliminates', 'reduces', 'optimizes', 'streamlines', 'automates', 'improves', 'enhances', 'simplifies', 'accelerates', 'prevents', 'mitigates']\n  },\n  industries: ['Healthcare', 'Finance', 'E-commerce', 'SaaS', 'Education', 'Manufacturing', 'Logistics', 'Media & Entertainment', 'Government', 'Technology', 'Retail', 'Real Estate', 'Other'],\n  weights: {\n    modernTechAlignment: 0.3,\n    problemClarity: 0.25,\n    broadApplicability: 0.25,\n    industryRelevance: 0.2\n  },\n  relevanceThreshold: 65\n};\n\nfunction calculateModernTechAlignment(text) {\n  let matchCount = 0;\n  config.relevanceKeywords.modern.forEach(k => {\n    if (text.toLowerCase().includes(k.toLowerCase())) matchCount++;\n  });\n  return Math.min(100, (matchCount / 3) * 100);\n}\n\nfunction calculateProblemClarity(problem, desc) {\n  if (!problem || problem.length < 20) return 30;\n  const text = (problem + ' ' + desc).toLowerCase();\n  let matchCount = 0;\n  config.relevanceKeywords.problemFocused.forEach(k => {\n    if (text.includes(k)) matchCount++;\n  });\n  return 50 + Math.min(50, matchCount * 10);\n}\n\nfunction calculateBroadApplicability(text, features) {\n  const indicators = ['any', 'all', 'various', 'multiple', 'flexible', 'adaptable', 'reusable', 'generic', 'universal', 'scalable'];\n  let count = 0;\n  indicators.forEach(i => {\n    if (text.toLowerCase().includes(i)) count++;\n  });\n  let score = 40 + Math.min(40, count * 8);\n  if (features && features.length >= 3) score += 20;\n  return Math.min(100, score);\n}\n\nfunction calculateIndustryRelevance(text) {\n  let matchCount = 0;\n  config.industries.forEach(i => {\n    if (text.toLowerCase().includes(i.toLowerCase())) matchCount++;\n  });\n  if (matchCount === 0) return 70; // Universal\n  if (matchCount >= 3) return 95;\n  if (matchCount >= 2) return 85;\n  return 60;\n}\n\nfunction identifyIndustries(text) {\n  const matched = [];\n  config.industries.forEach(i => {\n    if (text.toLowerCase().includes(i.toLowerCase())) matched.push(i);\n  });\n  return matched.length ? matched : ['Technology', 'Other'];\n}\n\nconst description = template.description || '';\nconst problemSolved = template.problemSolved || '';\nconst useCase = template.useCase || '';\nconst features = template.features || [];\nconst fullText = `${description} ${problemSolved} ${useCase} ${features.join(' ')}`;\n\nconst modernScore = calculateModernTechAlignment(fullText);\nconst problemScore = calculateProblemClarity(problemSolved, description);\nconst applicabilityScore = calculateBroadApplicability(fullText, features);\nconst industryScore = calculateIndustryRelevance(fullText);\n\nconst totalScore = Math.round(\n  modernScore * config.weights.modernTechAlignment +\n  problemScore * config.weights.problemClarity +\n  applicabilityScore * config.weights.broadApplicability +\n  industryScore * config.weights.industryRelevance\n);\n\nconst industries = identifyIndustries(fullText);\n\nreturn {\n  json: {\n    ...template,\n    evaluation: {\n      score: totalScore,\n      passes: totalScore >= config.relevanceThreshold,\n      breakdown: { modernScore, problemScore, applicabilityScore, industryScore },\n      industries\n    }\n  }\n};"
+            },
+            "name": "Evaluate Template",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 1,
+            "position": [
+                450,
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "databasePage",
+                "operation": "create",
+                "databaseId": "2b684cce9ecb80c7b597c3af12116a36",
+                "propertiesUi": {
+                    "propertyValues": [
+                        {
+                            "key": "Template Name|title",
+                            "title": "={{$json.name}}"
+                        },
+                        {
+                            "key": "Category|select",
+                            "select": "={{$json.category || 'Other'}}"
+                        },
+                        {
+                            "key": "Problem Solved|rich_text",
+                            "rich_text": "={{$json.problemSolved}}"
+                        },
+                        {
+                            "key": "Modern Scenario/Use Case|rich_text",
+                            "rich_text": "={{$json.useCase}}"
+                        },
+                        {
+                            "key": "Key Features|multi_select",
+                            "multi_select": "={{$json.features || []}}"
+                        },
+                        {
+                            "key": "Industry/Domain|multi_select",
+                            "multi_select": "={{$json.evaluation.industries}}"
+                        },
+                        {
+                            "key": "Date Discovered|date",
+                            "date": "={{new Date().toISOString()}}"
+                        },
+                        {
+                            "key": "Source|url",
+                            "url": "={{$json.source}}"
+                        },
+                        {
+                            "key": "Status|select",
+                            "select": "New"
+                        }
+                    ]
+                }
+            },
+            "name": "Create Notion Entry",
+            "type": "n8n-nodes-base.notion",
+            "typeVersion": 2,
+            "position": [
+                850,
+                300
+            ],
+            "credentials": {
+                "notionApi": {
+                    "id": "NOTION_CREDENTIAL_ID_PLACEHOLDER",
+                    "name": "Notion account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "filePath": "e:/PROJECTS/OFFICE_TICKET_MANAGEMENT SYSTEM/automation/email-template.html"
+            },
+            "name": "Read Email Template",
+            "type": "n8n-nodes-base.readBinaryFile",
+            "typeVersion": 1,
+            "position": [
+                1050,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "mode": "runOnceForEachItem",
+                "jsCode": "const html = $binary.data.data;\nconst template = $input.item.json;\nconst buffer = Buffer.from(html, 'base64');\nlet emailContent = buffer.toString('utf8');\n\n// Replace placeholders\nconst replacements = {\n  '{{TEMPLATE_NAME}}': template.name,\n  '{{CATEGORY}}': template.category || 'Other',\n  '{{RELEVANCE_SCORE}}': template.evaluation.score,\n  '{{PROBLEM_SOLVED}}': template.problemSolved,\n  '{{USE_CASE}}': template.useCase,\n  '{{FEATURES_LIST}}': (template.features || []).map(f => `<li>${f}</li>`).join(''),\n  '{{INDUSTRY_TAGS}}': template.evaluation.industries.map(i => `<span class=\"tag\">${i}</span>`).join(''),\n  '{{SOURCE_URL}}': template.source,\n  '{{NOTION_PAGE_URL}}': $input.item.json.url, // Notion node returns the url of created page\n  '{{DATE_DISCOVERED}}': new Date().toLocaleDateString(),\n  '{{STATUS}}': 'New'\n};\n\nObject.entries(replacements).forEach(([key, value]) => {\n  emailContent = emailContent.replace(new RegExp(key, 'g'), value || '');\n});\n\nreturn {\n  json: {\n    ...template,\n    emailContent\n  }\n};"
+            },
+            "name": "Prepare Email",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 1,
+            "position": [
+                1250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "fromEmail": "sk143sathya@gmail.com",
+                "toEmail": "bakup_section@googlegroups.com",
+                "subject": "=New Template Discovered: {{$json.name}}",
+                "html": "={{$json.emailContent}}",
+                "options": {}
+            },
+            "name": "Send Email",
+            "type": "n8n-nodes-base.emailSend",
+            "typeVersion": 1,
+            "position": [
+                1450,
+                300
+            ],
+            "credentials": {
+                "smtp": {
+                    "id": "SMTP_CREDENTIAL_ID_PLACEHOLDER",
+                    "name": "SMTP account"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Evaluate Template",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Evaluate Template": {
+            "main": [
+                [
+                    {
+                        "node": "Filter Low Relevance",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filter Low Relevance": {
+            "main": [
+                [
+                    {
+                        "node": "Create Notion Entry",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create Notion Entry": {
+            "main": [
+                [
+                    {
+                        "node": "Read Email Template",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Read Email Template": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Email": {
+            "main": [
+                [
+                    {
+                        "node": "Send Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {},
+    "staticData": null,
+    "tags": []
+}
