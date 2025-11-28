@@ -1,0 +1,147 @@
+{
+    "title": {
+        "type": "title"
+    },
+    "Category": {
+        "type": "select",
+        "select": {
+            "options": [
+                {
+                    "name": "UI/UX Design",
+                    "color": "blue"
+                },
+                {
+                    "name": "Software Architecture",
+                    "color": "purple"
+                },
+                {
+                    "name": "Development Framework",
+                    "color": "green"
+                },
+                {
+                    "name": "Workflow Pattern",
+                    "color": "yellow"
+                },
+                {
+                    "name": "Business Process",
+                    "color": "orange"
+                },
+                {
+                    "name": "Data Management",
+                    "color": "red"
+                },
+                {
+                    "name": "Security Pattern",
+                    "color": "pink"
+                },
+                {
+                    "name": "DevOps/CI-CD",
+                    "color": "brown"
+                },
+                {
+                    "name": "Other",
+                    "color": "gray"
+                }
+            ]
+        }
+    },
+    "Problem Solved": {
+        "type": "rich_text"
+    },
+    "Modern Scenario/Use Case": {
+        "type": "rich_text"
+    },
+    "Key Features": {
+        "type": "multi_select",
+        "multi_select": {
+            "options": []
+        }
+    },
+    "Industry/Domain": {
+        "type": "multi_select",
+        "multi_select": {
+            "options": [
+                {
+                    "name": "Healthcare",
+                    "color": "blue"
+                },
+                {
+                    "name": "Finance",
+                    "color": "green"
+                },
+                {
+                    "name": "E-commerce",
+                    "color": "yellow"
+                },
+                {
+                    "name": "SaaS",
+                    "color": "purple"
+                },
+                {
+                    "name": "Education",
+                    "color": "pink"
+                },
+                {
+                    "name": "Manufacturing",
+                    "color": "orange"
+                },
+                {
+                    "name": "Logistics",
+                    "color": "red"
+                },
+                {
+                    "name": "Media & Entertainment",
+                    "color": "brown"
+                },
+                {
+                    "name": "Government",
+                    "color": "gray"
+                },
+                {
+                    "name": "Technology",
+                    "color": "blue"
+                },
+                {
+                    "name": "Retail",
+                    "color": "green"
+                },
+                {
+                    "name": "Real Estate",
+                    "color": "yellow"
+                },
+                {
+                    "name": "Other",
+                    "color": "default"
+                }
+            ]
+        }
+    },
+    "Date Discovered": {
+        "type": "date"
+    },
+    "Source": {
+        "type": "url"
+    },
+    "Status": {
+        "type": "select",
+        "select": {
+            "options": [
+                {
+                    "name": "New",
+                    "color": "green"
+                },
+                {
+                    "name": "Verified",
+                    "color": "blue"
+                },
+                {
+                    "name": "Archived",
+                    "color": "gray"
+                }
+            ]
+        }
+    },
+    "Relevance Score": {
+        "type": "number"
+    }
+}
