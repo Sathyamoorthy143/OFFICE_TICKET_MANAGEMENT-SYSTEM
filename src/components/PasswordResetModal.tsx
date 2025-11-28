@@ -6,7 +6,6 @@ import { validatePasswordStrength } from '../lib/passwordPolicy';
 
 interface PasswordResetModalProps {
     isOpen: boolean;
-    onClose: () => void;
     userId: string;
     daysRemaining?: number;
 }
